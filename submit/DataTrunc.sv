@@ -11,6 +11,7 @@ module DataTrunc (
 
   // Data trunction
   // fill your code
+  //truncate the data needed to be read
 
 endmodule
 

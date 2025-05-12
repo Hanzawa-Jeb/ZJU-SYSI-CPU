@@ -10,6 +10,7 @@ module MaskGen(
 
   // Mask generation
   // fill your code
+  //generate the mask for loading into the memory
 
 endmodule
 
