@@ -12,10 +12,13 @@ module controller (
     output CorePack::alu_bsel_op_enum alu_bsel,
     output CorePack::wb_sel_op_enum wb_sel,
     output CorePack::mem_op_enum mem_op
+    // output ControllerPack::ControllerSignals ctrl_signals
 );
 
     import CorePack::*;
+    // import ControllerPack::*;
     
     // fill your code
 
 endmodule
+
