@@ -17,12 +17,12 @@ module Cmp (
             CMP_EQ: cmp_res = (a == b) ? 1'b1 : 1'b0; //equal to 
             CMP_NE: cmp_res = (a == b) ? 1'b0 : 1'b1; //not equal to 
             CMP_LT: cmp_res = ($signed(a) < $signed(b)) ? 1'b1 : 1'b0; //lower than
-            CMP_GE: cmp_res = ($signed(a) < $(signed(b))) ? 1'b0 : 1'b1;
+            CMP_GE: cmp_res = ($signed(a) < $signed(b)) ? 1'b0 : 1'b1;
             CMP_LTU: cmp_res = (a < b) ? 1'b1 : 1'b0;
             CMP_GEU: cmp_res = (a < b) ? 1'b0 : 1'b1;
             //unsigned version
             CMP7: cmp_res = 1'b0;
-            //what the hell is this?
+            //NO OPERATION
             default: cmp_res = 1'b0;
         endcase
     end
