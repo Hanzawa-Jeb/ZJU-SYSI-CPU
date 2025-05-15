@@ -16,31 +16,33 @@ module Core (
     
     // fill your code
 
-    imem_ift.r_request
-
-    logic [31:0] pc
+    logic [63:0] pc
     //the current pc 
-    logic [31:0] pc_next;
+    logic [63:0] pc_next;
     //the next pc
-    logic [31:0] pc_plus_f;
+    logic [63:0] pc_plus_f;
     //pc plus four
 
     data_t ALUinput1;
     data_t ALUinput2;
     data_t alu_res;
     //set the wires for the ALU
+
+    data_t imm;
+    //set the wires for the ImmGen
     
     inst_t inst;
+    logic [63:0] inst_64;
     wire we_reg;
     wire we_mem;
     wire re_mem;
     wire npc_sel;
     imm_op_enum immgen_op;
     alu_op_enum alu_op;
-    cmp_op_enum cmp_op;
-    alu_asel_op_enum alu_asel;
-    alu_bsel_op_enum alu_bsel;
-    wb_sel_op_enum wb_sel;
+    cmp_op_enum cmp_op;//this is the bralu_op
+    alu_asel_op_enum alu_asel;!
+    alu_bsel_op_enum alu_bsel;!
+    wb_sel_op_enum wb_sel;!
     mem_op_enum mem_op;
     //set the wires from the controller
 
@@ -71,9 +73,39 @@ module Core (
         //connect the ALU
     )
 
+    ImmGen immgen(
+        .inst(inst[31:7]),
+        .immgen_op(immgen_op),
+        .imm(imm)
+        //connect the immgen module
+    )
+
+    Mux2To1_64 mux1(
+        .I0(pc+4),
+        .I1(alu_res),
+        .S0(br_taken),
+        .O(pc_next)
+        //control the update of the PC
+    )
+
+    Mux2To1_64 muxA(
+        .I0(pc),
+        .I1(dataR1),
+        .S(alu_asel),
+        .O(ALUinput1)
+    )
+
+    Mux2To1_64 muxB(
+        .I0(dataR2),
+        .I1(genImm),
+        .S(alu_bsel),
+        .O(ALUinput2)
+    )
+    //these two multiplexers are for the ALU input
+
     always_ff @(posedge clk) begin
         if (rst) begin
-            pc <= 32'b0;
+            pc <= 64'b0;
         end else begin
             pc <= pc_next;
             //give the value of pc_next to pc
@@ -86,32 +118,32 @@ module Core (
         //always prepare the pc + 4
     end
 
-    Mux2To1 mux1(
-        .I0(pc+4),
-        .I1(alu_res),
-        .S0(br_taken),
-        .O(pc_next)
-        //control the update of the PC
-    )
+    always_comb begin
+        if (PC[2]) begin
+            inst = inst64[63:32]; //get the higher 32 bits
+        end else begin
+            inst = inst64[31:0];  //get the lower 32 bits
+        end
+    end
 
-    Mux2To1 muxA(
-        .I0(pc),
-        .I1(dataR1),
-        .S(alu_asel),
-        .O(ALUinput1)
-    )
+    assign imem_ift.r_request_valid = 1'b1;
+    //set the imem valid signal to always 1
+    assign imem_ift.r_request_bits.raddr = {pc[63:3], 3'b0};
+    //assign the pc to the read address
+    assign inst_64 = imem_ift.r_reply_bits.rdata;
+    //get the instruction with the length of 64 bits
 
-    Mux2To1 muxB(
-        .I0(dataR2),
-        .I1(genImm),
-        .S(alu_bsel),
-        .O(ALUinput2)
-    )
-    //these two multiplexers are for the ALU input
+    assign dmem_ift.r_request_valid = 1'b1;
+    //always set to 1
+    assign dmem_ift.r_request_bits.raddr = alu_res;
 
+    assign dmem_ift.w_request_valid = we_mem;
+    assign dmem_ift.w_request_bits.waddr = alu_res;
+    assign dmem_ift.w_request_bits.wdata = write_data;
+    //note that this part need to be completed
+    assign dmem_ift.w_request_bits.wmask = write_mask;
+    //this part also need to be completed
 
-
-    assign imem_ift.
 
     assign cosim_valid = 1'b1;
     assign cosim_core_info.pc        = pc;
@@ -137,10 +169,6 @@ module Core (
     assign cosim_core_info.npc       = next_pc;
 
 endmodule
-
-
-
-
 
 
 module MultiFSM(
