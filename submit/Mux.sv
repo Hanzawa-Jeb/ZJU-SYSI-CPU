@@ -1,7 +1,7 @@
 module Mux2To1_64(
     input [63:0] I0,
     input [63:0] I1,
-    input S0,
+    input S,
     output [63:0] O
 );
     assign O = S ? I1 : I0;

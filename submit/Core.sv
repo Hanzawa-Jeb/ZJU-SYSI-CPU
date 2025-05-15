@@ -104,7 +104,7 @@ module Core (
     Mux2To1_64 mux1(
         .I0(pc_plus_f),
         .I1(alu_res),
-        .S0(br_taken),
+        .S(br_taken),
         .O(pc_next)
         //control the update of the PC
     )
@@ -115,7 +115,7 @@ module Core (
         .S(alu_asel),
         .O(ALUinput1)
     )
-    
+
     //these two multiplexers are for the ALU input
 
     MuxB muxB(
@@ -145,11 +145,12 @@ module Core (
     end
 
     always_comb begin
-        assign pc_plus_f = pc + 4;
-        //always prepare the pc + 4
+        pc_plus_f = pc + 64'h4;
+        //always prepare the PC+4
     end
 
     always_comb begin
+        //inst selection
         if (PC[2]) begin
             inst = inst_64[63:32]; //get the higher 32 bits
         end else begin
@@ -164,11 +165,12 @@ module Core (
     assign inst_64 = imem_ift.r_reply_bits.rdata;
     //get the instruction with the length of 64 bits
 
-    assign dmem_ift.r_request_valid = 1'b1;
-    //always set to 1
+    assign dmem_ift.r_request_valid = re_mem;
+    //always set to 1 is OK?
     assign dmem_ift.r_request_bits.raddr = alu_res;
 
     assign dmem_ift.w_request_valid = we_mem;
+    //always set to 1 is OK?not OK
     assign dmem_ift.w_request_bits.waddr = alu_res;
     assign dmem_ift.w_request_bits.wdata = write_data;
     //note that this part need to be completed

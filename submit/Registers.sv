@@ -12,5 +12,6 @@ module Registers (
 );
 
 //implement the functions of the Register group
+//waiting to be finished
 
 endmodule
