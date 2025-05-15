@@ -6,52 +6,50 @@ module MaskGen(
     //opcode for the memory operation
     input CorePack::addr_t dmem_waddr,
     //write address of the content
-    output CorePack::data_t dmem_wmask
+    output CorePack::mask_t dmem_wmask
     //the mask generated
 );
 
   import CorePack::*;
-  // Mask generation
-  //generate the mask for loading into the memory
+  
   always_comb begin
     case(mem_op)
       MEM_NO: begin
         //no operation
-        dmem_wmask = 64'h0;
+        dmem_wmask = 8'b0;
       end
       MEM_D: begin
-        //double word, 64-bit
-        dmem_wmask = 64'hffffffffffffffff;
+        //double word, 64-bit, all bytes enabled
+        dmem_wmask = 8'b1111_1111;
       end
       MEM_W: begin
-        //word, 32-bit
-        dmem_wmask = {32'h0, 32'hffffffff} << {dmem_waddr[2:0], 3'b0};
+        //word, 32-bit, enable 4 bytes
+        dmem_wmask = (4'b1111 << dmem_waddr[2:0]);
       end
       MEM_H: begin
-        //half-word, 16-bit
-        dmem_wmask = {48'h0, 16'hffff} << {dmem_waddr[2:0], 3'b0};
+        //half-word, 16-bit, enable 2 bytes
+        dmem_wmask = (2'b11 << dmem_waddr[2:0]);
       end
       MEM_B: begin
-        //one-byte, 8-bit
-        dmem_wmask = {56'h0, 8'hff} << {dmem_waddr[2:0], 3'b0};
+        //one-byte, 8-bit, enable 1 byte
+        dmem_wmask = (1'b1 << dmem_waddr[2:0]);
       end
       MEM_UB: begin
         //one-byte unsigned
-        dmem_wmask = {56'h0, 8'hff} << {dmem_waddr[2:0], 3'b0};
+        dmem_wmask = (1'b1 << dmem_waddr[2:0]);
       end
       MEM_UH: begin
         //half-word unsigned
-        dmem_wmask = {48'h0, 16'hffff} << {dmem_waddr[2:0], 3'b0};
+        dmem_wmask = (2'b11 << dmem_waddr[2:0]);
       end
       MEM_UW: begin
         //word unsigned
-        dmem_wmask = {32'h0, 32'hffffffff} << {dmem_waddr[2:0], 3'b0};
+        dmem_wmask = (4'b1111 << dmem_waddr[2:0]);
       end
       default: begin
-        dmem_wmask = 64'h0;
+        dmem_wmask = 8'b0;
       end
     endcase
   end
 
 endmodule
-

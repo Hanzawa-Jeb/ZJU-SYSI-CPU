@@ -23,6 +23,8 @@ module Core (
     logic [63:0] pc_plus_f;
     //pc plus four
 
+    logic [63:0] alw_zero = 64'b0;
+
     data_t ALUinput1;
     data_t ALUinput2;
     data_t alu_res;
@@ -40,9 +42,9 @@ module Core (
     imm_op_enum immgen_op;
     alu_op_enum alu_op;
     cmp_op_enum cmp_op;//this is the bralu_op in the picture
-    alu_asel_op_enum alu_asel;!
-    alu_bsel_op_enum alu_bsel;!
-    wb_sel_op_enum wb_sel;!
+    alu_asel_op_enum alu_asel;
+    alu_bsel_op_enum alu_bsel;
+    wb_sel_op_enum wb_sel;
     mem_op_enum mem_op;
     //set the wires from the controller
 
@@ -54,6 +56,8 @@ module Core (
     logic [63:0] dataR1;
     logic [63:0] dataR2;
     //here are the signals that are connected to the Register group
+
+    logic [63:0] truncatedData;
 
     controller Controller(
         .inst(inst),
@@ -105,20 +109,30 @@ module Core (
         //control the update of the PC
     )
 
-    Mux2To1_64 muxA(
-        .I0(pc),
-        .I1(dataR1),
+    MuxA muxA(
+        .PC(pc),
+        .REG(dataR1),
         .S(alu_asel),
         .O(ALUinput1)
     )
+    
+    //these two multiplexers are for the ALU input
 
-    Mux2To1_64 muxB(
-        .I0(dataR2),
-        .I1(imm),
+    MuxB muxB(
+        .IMM(imm),
+        .REG(dataR2),
         .S(alu_bsel),
         .O(ALUinput2)
     )
-    //these two multiplexers are for the ALU input
+
+    Mux3To1_64 mux3(
+        .PC(pc_plus_f),
+        .ALU(alu_res),
+        .MEM(truncatedData),
+        .S(wb_sel),
+        .O(dataW)
+    )
+    //connect the Mux4To1 altogether
 
     always_ff @(posedge clk) begin
         if (rst) begin
