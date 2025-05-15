@@ -39,7 +39,7 @@ module Core (
     wire npc_sel;
     imm_op_enum immgen_op;
     alu_op_enum alu_op;
-    cmp_op_enum cmp_op;//this is the bralu_op
+    cmp_op_enum cmp_op;//this is the bralu_op in the picture
     alu_asel_op_enum alu_asel;!
     alu_bsel_op_enum alu_bsel;!
     wb_sel_op_enum wb_sel;!
@@ -48,6 +48,12 @@ module Core (
 
     wire br_taken;
     //the control signal for whether taking the branch
+
+    logic [63:0] dataW;
+    //the final output on the right
+    logic [63:0] dataR1;
+    logic [63:0] dataR2;
+    //here are the signals that are connected to the Register group
 
     controller Controller(
         .inst(inst),
@@ -65,6 +71,17 @@ module Core (
         //connect all the wires from the controller
     )   
 
+    Registers registers(
+        .rd(inst[11:7]),
+        .rsR1(inst[19:15]),
+        .rsR2(inst[24:20]),
+        .dataW(dataW),
+        .dataR1(dataR1),
+        .dataR2(dataR2),
+        .clk(clk),
+        .we_reg(we_reg)
+    )
+
     ALU alu(
         .a(ALUinput1),
         .b(ALUinput2),
@@ -81,7 +98,7 @@ module Core (
     )
 
     Mux2To1_64 mux1(
-        .I0(pc+4),
+        .I0(pc_plus_f),
         .I1(alu_res),
         .S0(br_taken),
         .O(pc_next)
@@ -97,7 +114,7 @@ module Core (
 
     Mux2To1_64 muxB(
         .I0(dataR2),
-        .I1(genImm),
+        .I1(imm),
         .S(alu_bsel),
         .O(ALUinput2)
     )
@@ -120,9 +137,9 @@ module Core (
 
     always_comb begin
         if (PC[2]) begin
-            inst = inst64[63:32]; //get the higher 32 bits
+            inst = inst_64[63:32]; //get the higher 32 bits
         end else begin
-            inst = inst64[31:0];  //get the lower 32 bits
+            inst = inst_64[31:0];  //get the lower 32 bits
         end
     end
 
@@ -143,6 +160,7 @@ module Core (
     //note that this part need to be completed
     assign dmem_ift.w_request_bits.wmask = write_mask;
     //this part also need to be completed
+    //setting the port of the IMEM and DMEM
 
 
     assign cosim_valid = 1'b1;
