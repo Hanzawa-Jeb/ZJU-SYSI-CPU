@@ -9,8 +9,6 @@ module ImmGen (
 
 import CorePack::*;
 
-data_t imm = 64'b0;
-
 always_comb begin
     case(immgen_op)
         IMM0: begin

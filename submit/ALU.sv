@@ -20,7 +20,7 @@ module ALU (
       ALU_SLTU: res = (a < b) ? 1'b1 : 1'b0;  //set less than unsigned
       ALU_SLL: res = a << b[4:0];   //logical shift left
       ALU_SRL: res = a >> b[4:0];   //logical right shift
-      ALU_SRA: res = $signed(a) >>> b[4:0]  //arithmetic right shift
+      ALU_SRA: res = $signed(a) >>> b[4:0];  //arithmetic right shift
       ALU_ADDW:   res = {{32{$signed(a[31:0] + b[31:0])[31]}}, $signed(a[31:0] + b[31:0])};
       ALU_SUBW:   res = {{32{$signed(a[31:0] - b[31:0])[31]}}, $signed(a[31:0] - b[31:0])};
       ALU_SLLW:   res = {{32{1'b0}}, (a[31:0] << b[4:0])};

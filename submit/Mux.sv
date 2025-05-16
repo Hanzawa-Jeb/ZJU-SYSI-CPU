@@ -7,13 +7,13 @@ module Mux2To1_64(
     assign O = S ? I1 : I0;
 endmodule
 
-module muxA(
+module MuxA(
     input [63:0] PC,
     input [63:0] REG,
-    input alu_asel_op_enum S,
+    input CorePack::alu_asel_op_enum S,
     output [63:0] O
 );
-
+    import CorePack::*;
     always_comb begin
         case(S) 
             ASEL0: O = 64'b0;
@@ -26,13 +26,13 @@ module muxA(
 
 endmodule
 
-module muxB(
+module MuxB(
     input [63:0] IMM,
     input [63:0] REG,
-    input alu_bsel_op_enum S,
+    input CorePack::alu_bsel_op_enum S,
     output [63:0] O
-)
-
+);
+    import CorePack::*;
     always_comb begin
         case(S) 
             BSEL0: O = 64'b0;
@@ -49,10 +49,10 @@ module Mux3To1_64(
     input [63:0] PC,
     input [63:0] ALU,
     input [63:0] MEM,
-    input wb_sel_op_enum S,
+    input CorePack::wb_sel_op_enum S,
     output [63:0] O
 );
-
+    import CorePack::*;
     wire [63:0] I01;
     wire [63:0] I23;
 

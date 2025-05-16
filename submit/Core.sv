@@ -14,7 +14,7 @@ module Core (
 );
     import CorePack::*;
 
-    logic [63:0] pc
+    logic [63:0] pc;
     //the current pc 
     logic [63:0] pc_next;
     //the next pc
@@ -66,6 +66,10 @@ module Core (
     logic [63:0] truncatedData;
     //get the return of the DRAM
 
+    logic [63:0] read_data_1;
+    logic [63:0] read_data_2;
+    logic [63:0] wb_val;
+
     controller Controller(
         .inst(inst),
         .we_reg(we_reg),
@@ -80,7 +84,7 @@ module Core (
         .wb_sel(wb_sel),
         .mem_op(mem_op)
         //connect all the wires from the controller
-    )   
+    );   
 
     Registers registers(
         .rst(rst),
@@ -92,7 +96,7 @@ module Core (
         .dataR2(dataR2),
         .clk(clk),
         .we_reg(we_reg)
-    )
+    );
 
     ALU alu(
         .a(ALUinput1),
@@ -100,14 +104,14 @@ module Core (
         .alu_op(alu_op),
         .res(alu_res)
         //connect the ALU
-    )
+    );
 
     ImmGen immgen(
         .inst(inst[31:7]),
         .immgen_op(immgen_op),
         .imm(imm)
         //connect the immgen module
-    )
+    );
 
     Mux2To1_64 mux1(
         .I0(pc_plus_f),
@@ -115,14 +119,14 @@ module Core (
         .S(br_taken),
         .O(pc_next)
         //control the update of the PC
-    )
+    );
 
     MuxA muxA(
         .PC(pc),
         .REG(dataR1),
         .S(alu_asel),
         .O(ALUinput1)
-    )
+    );
 
     //these two multiplexers are for the ALU input
 
@@ -131,7 +135,7 @@ module Core (
         .REG(dataR2),
         .S(alu_bsel),
         .O(ALUinput2)
-    )
+    );
 
     Mux3To1_64 mux3(
         .PC(pc_plus_f),
@@ -139,7 +143,7 @@ module Core (
         .MEM(truncatedData),
         .S(wb_sel),
         .O(dataW)
-    )
+    );
     //connect the Mux4To1 altogether
 
     DataPkg datapkg(
@@ -148,28 +152,28 @@ module Core (
         .dmem_waddr(alu_res),
         .dmem_wdata(write_data)
         //instantiate the datapackage module
-    )
+    );
 
     MaskGen maskgen(
         .mem_op(mem_op),
         .dmem_waddr(alu_res),
         .dmem_wmask(write_mask)
         //instantiate the maskgen module
-    )
+    );
 
     DataTrunc datatrunc(
         .dmem_rdata(dmem_rdata),
         .mem_op(mem_op),
         .dmem_raddr(alu_res),
         .read_data(truncatedData)
-    )
+    );
 
     Cmp branch_cmp(
         .a(dataR1),
         .b(dataR2),
         .cmp_op(cmp_op),
         .cmp_res(br_taken)
-    )
+    );
 
     always_ff @(posedge clk) begin
         if (rst) begin
@@ -188,7 +192,7 @@ module Core (
 
     always_comb begin
         //inst selection
-        if (PC[2]) begin
+        if (pc[2]) begin
             inst = inst_64[63:32]; //get the higher 32 bits
         end else begin
             inst = inst_64[31:0];  //get the lower 32 bits
@@ -218,7 +222,7 @@ module Core (
     assign dmem_rdata = dmem_ift.r_reply_bits.rdata;
     //get the return of the DMEM
     
-
+    assign wb_val = dataW;
 
     assign read_data_1 = dataR1;
     assign read_data_2 = dataR2;
@@ -247,10 +251,10 @@ module Core (
     assign cosim_core_info.rd_data   = wb_val;
     //rd_data need to be connected
     assign cosim_core_info.br_taken  = {63'b0, br_taken};
-    assign cosim_core_info.npc       = next_pc;
+    assign cosim_core_info.npc       = pc_next;
 
     assign rd = inst[11:7];
-    assign wb_val = dataW;
+
 
 endmodule
 

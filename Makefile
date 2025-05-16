@@ -68,7 +68,7 @@ clean_verilate:
 #   	 VIVADO_SETUP := call D:\App\Xilinx\Vivado\2022.2\settings64.bat
 #   or in Linux: 
 #        VIVADO_SETUP := source /opt/Xilinx/Vivado/2022.2/settings64.sh
-VIVADO_SETUP		:=  $(error "please set your vivado's path")
+# VIVADO_SETUP		:=  $(error "please set your vivado's path")
 
 CMD_PREFIX			:=	bash -c
 PATH_TRANS			:=	realpath
@@ -78,7 +78,7 @@ TOP_MODULE			?=	top
 
 ifneq (,$(findstring microsoft,$(shell uname -a)))
 WSLENV				:=	$(WSLENV):DIR_SRC/p:DIR_SYN/p:DIR_TCL/p:DIR_BUILD/p:DIR_INCLUDE/p:CUSTOM_INCLUDE/p:DIR_GENERAL/p
-DIR_PROJECT			:=	$(error "please set your project's path")
+# DIR_PROJECT			:=	$(error "please set your project's path")
 CMD_PREFIX			:=	cmd.exe /c
 PATH_TRANS			:=	wslpath -w
 endif
