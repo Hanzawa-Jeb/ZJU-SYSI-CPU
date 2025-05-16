@@ -13,8 +13,6 @@ module Core (
     output CorePack::CoreInfo cosim_core_info
 );
     import CorePack::*;
-    
-    // fill your code
 
     logic [63:0] pc
     //the current pc 
@@ -57,7 +55,9 @@ module Core (
     logic [63:0] dataR2;
     //here are the signals that are connected to the Register group
 
+    data_t dmem_rdata;
     logic [63:0] truncatedData;
+    //get the return of the DRAM
 
     controller Controller(
         .inst(inst),
@@ -134,6 +134,35 @@ module Core (
     )
     //connect the Mux4To1 altogether
 
+    DataPkg datapkg(
+        .mem_op(mem_op),
+        .reg_data(dataR2),
+        .dmem_waddr(alu_res),
+        .dmem_wdata(write_data)
+        //instantiate the datapackage module
+    )
+
+    MaskGen maskgen(
+        .mem_op(mem_op),
+        .dmem_waddr(alu_res),
+        .dmem_wmask(write_mask)
+        //instantiate the maskgen module
+    )
+
+    DataTrunc datatrunc(
+        .dmem_rdata(dmem_rdata),
+        .mem_op(mem_op),
+        .dmem_raddr(alu_res),
+        .read_data(truncatedData)
+    )
+
+    Cmp branch_cmp(
+        .a(dataR1),
+        .b(dataR2),
+        .cmp_op(cmp_op),
+        .cmp_res(br_taken)
+    )
+
     always_ff @(posedge clk) begin
         if (rst) begin
             pc <= 64'b0;
@@ -177,6 +206,10 @@ module Core (
     assign dmem_ift.w_request_bits.wmask = write_mask;
     //this part also need to be completed
     //setting the port of the IMEM and DMEM
+
+    assign dmem_rdata = dmem_ift.r_reply_bits.rdata;
+    //get the return of the DMEM
+    
 
 
     assign cosim_valid = 1'b1;
