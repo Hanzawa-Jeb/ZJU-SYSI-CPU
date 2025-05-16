@@ -1,21 +1,21 @@
 module Registers (
-    input clk;
+    input clk,
     //the parameters for the registers
-    input rst;
+    input rst,
     //reset the registers
-    input logic [11:7] rd;
+    input logic [11:7] rd,
     //destination to write
-    input logic [19:15] rsR1;
+    input logic [19:15] rsR1,
     //source to read
-    input logic [24:20] rsR2;
+    input logic [24:20] rsR2,
     //source to read 2
-    input logic [63:0] dataW;
+    input logic [63:0] dataW,
     //address to write
-    input we_reg;
+    input we_reg,
     //write enable
-    output logic [63:0] dataR1;
+    output logic [63:0] dataR1,
     //data 1
-    output logic [63:0] dataR2;
+    output logic [63:0] dataR2
     //data 2
 );
 
@@ -34,8 +34,8 @@ module Registers (
         end
     end
 
-    assign dataR1 = RegGroup[rsR1];
-    assign dataR2 = RegGroup[rsR2];
+    assign dataR1 = (rsR1 == 5'b0) ? 64'b0 : RegGroup[rsR1];
+    assign dataR2 = (rsR2 == 5'b0) ? 64'b0 : RegGroup[rsR2];
 
 //implement the functions of the Register group
 //waiting to be finished

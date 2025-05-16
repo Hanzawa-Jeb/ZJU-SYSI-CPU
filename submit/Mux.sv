@@ -8,10 +8,10 @@ module Mux2To1_64(
 endmodule
 
 module muxA(
-    input [63:0] PC;
-    input [63:0] REG;
-    input alu_asel_op_enum S;
-    output [63:0] O;
+    input [63:0] PC,
+    input [63:0] REG,
+    input alu_asel_op_enum S,
+    output [63:0] O
 );
 
     always_comb begin
@@ -27,10 +27,10 @@ module muxA(
 endmodule
 
 module muxB(
-    input [63:0] IMM;
-    input [63:0] REG;
-    input alu_bsel_op_enum S;
-    output [63:0] O;
+    input [63:0] IMM,
+    input [63:0] REG,
+    input alu_bsel_op_enum S,
+    output [63:0] O
 )
 
     always_comb begin
