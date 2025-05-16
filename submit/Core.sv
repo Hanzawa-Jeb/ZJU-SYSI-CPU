@@ -21,6 +21,11 @@ module Core (
     logic [63:0] pc_plus_f;
     //pc plus four
 
+    logic [63:0] write_data;
+    logic [63:0] write_mask;
+    logic [4:0] rs1;
+    logic [4:0] rs2;
+
     logic [4:0] rd;
 
     logic [63:0] alw_zero = 64'b0;
@@ -214,6 +219,12 @@ module Core (
     //get the return of the DMEM
     
 
+
+    assign read_data_1 = dataR1;
+    assign read_data_2 = dataR2;
+
+    assign rs1 = inst[19:15];
+    assign rs2 = inst[24:20];
 
     assign cosim_valid = 1'b1;
     assign cosim_core_info.pc        = pc;
