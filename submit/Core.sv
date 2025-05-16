@@ -21,6 +21,8 @@ module Core (
     logic [63:0] pc_plus_f;
     //pc plus four
 
+    logic [4:0] rd;
+
     logic [63:0] alw_zero = 64'b0;
 
     data_t ALUinput1;
@@ -234,6 +236,9 @@ module Core (
     //rd_data need to be connected
     assign cosim_core_info.br_taken  = {63'b0, br_taken};
     assign cosim_core_info.npc       = next_pc;
+
+    assign rd = inst[11:7];
+    assign wb_val = dataW;
 
 endmodule
 
