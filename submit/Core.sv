@@ -78,6 +78,7 @@ module Core (
     )   
 
     Registers registers(
+        .rst(rst),
         .rd(inst[11:7]),
         .rsR1(inst[19:15]),
         .rsR2(inst[24:20]),
