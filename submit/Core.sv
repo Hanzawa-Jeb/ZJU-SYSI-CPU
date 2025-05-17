@@ -22,7 +22,7 @@ module Core (
     //pc plus four
 
     logic [63:0] write_data;
-    logic [63:0] write_mask;
+    logic [7:0] write_mask;
     logic [4:0] rs1;
     logic [4:0] rs2;
 

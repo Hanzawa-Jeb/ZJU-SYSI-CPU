@@ -16,8 +16,8 @@ module ALU (
       ALU_AND: res = a & b;
       ALU_OR: res = a | b;
       ALU_XOR: res = a ^ b;
-      ALU_SLT: res = ($signed(a) < $signed(b)) ? 1'b1 : 1'b0;   //set less than
-      ALU_SLTU: res = (a < b) ? 1'b1 : 1'b0;  //set less than unsigned
+      ALU_SLT: res = ($signed(a) < $signed(b)) ? 64'b1 : 64'b0;   //set less than
+      ALU_SLTU: res = (a < b) ? 64'b1 : 64'b0;  //set less than unsigned
       ALU_SLL: res = a << b[4:0];   //logical shift left
       ALU_SRL: res = a >> b[4:0];   //logical right shift
       ALU_SRA: res = $signed(a) >>> b[4:0];  //arithmetic right shift

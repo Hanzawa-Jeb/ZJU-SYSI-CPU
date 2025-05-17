@@ -32,9 +32,9 @@ module controller (
     
     //variable declarance
 
-    wire opcode = inst[6:0];
-    wire funct7 = inst[31:25];
-    wire funct3 = inst[14:12];
+    opcode_t opcode = inst[6:0];
+    funct7_t funct7 = inst[31:25];
+    funct3_t funct3 = inst[14:12];
 
     wire inst_load = (opcode == LOAD_OPCODE);
     wire inst_imm = (opcode == IMM_OPCODE);
